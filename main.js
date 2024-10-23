@@ -1,7 +1,7 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const artifact = require('@actions/artifact')
-const AdmZip = require('adm-zip')
+const StreamZip = require('node-stream-zip')
 const filesize = require('filesize')
 const pathname = require('path')
 const fs = require('fs')
@@ -266,21 +266,24 @@ async function main() {
                 continue
             }
 
+            const tempFile = fs.mkdtempSync(path.join(os.tmpdir(), 'tmp-'));
+            fs.writeFileSync(tempFile, Buffer.from(zip.data), 'binary')
+
             const dir = name && !nameIsRegExp ? path : pathname.join(path, artifact.name)
 
             fs.mkdirSync(dir, { recursive: true })
 
-            const adm = new AdmZip(Buffer.from(zip.data))
+            const zip = new StreamZip.async({ file: tempFile })
 
             core.startGroup(`==> Extracting: ${artifact.name}.zip`)
-            adm.getEntries().forEach((entry) => {
+            const entries = await zip.entries();
+            for (const entry of Object.values(entries)) {
                 const action = entry.isDirectory ? "creating" : "inflating"
-                const filepath = pathname.join(dir, entry.entryName)
-
+                const filepath = pathname.join(dir, entry.name)
                 core.info(`  ${action}: ${filepath}`)
-            })
+            }
 
-            adm.extractAllTo(dir, true)
+            const count = await zip.extract(null, dir);
             core.endGroup()
         }
     } catch (error) {

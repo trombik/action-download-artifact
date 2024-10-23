@@ -13,9 +13,9 @@ updates:
     versions:
     - 6.2.6
     - 6.3.0
-  - dependency-name: adm-zip
+  - dependency-name: node-stream-zip
     versions:
-    - 0.5.3
+    - 1.15.0
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
