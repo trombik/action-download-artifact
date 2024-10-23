@@ -286,7 +286,9 @@ async function main() {
             }
 
             const count = await zipfile.extract(null, dir);
-            fs.rm(tempDir, { recursive: true, force: true })
+            fs.rm(tempDir,{ recursive: true, force: true }, (err) => {
+                core.error(`Error removing tmp directory: ${err}: action may still succeed though`)
+            }
             core.endGroup()
         }
     } catch (error) {
