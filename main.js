@@ -250,6 +250,7 @@ async function main() {
                     owner: owner,
                     repo: repo,
                     archive_format: "zip",
+                    artifact_id: artifact.id,
                     path: path
                 })
                 core.info(`Downloaded artifact ${id} to: ${downloadPath}`);
