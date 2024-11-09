@@ -245,14 +245,14 @@ async function main() {
 
             core.info(`==> Downloading: ${artifact.name}.zip (${size})`)
 
-            let zip
             try {
-                zip = await client.rest.actions.downloadArtifact({
+                const {downloadPath} = await client.rest.actions.downloadArtifact({
                     owner: owner,
                     repo: repo,
                     artifact_id: artifact.id,
                     archive_format: "zip",
                 })
+                core.info(`Downloaded artifact ${id} to: ${downloadPath}`);
             } catch (error) {
                 if (error.message.startsWith("Artifact has expired")) {
                     return setExitMessage(ifNoArtifactFound, "no downloadable artifacts found (expired)")
@@ -260,37 +260,6 @@ async function main() {
                     throw new Error(error.message)
                 }
             }
-
-            if (skipUnpack) {
-                fs.mkdirSync(path, { recursive: true })
-                fs.writeFileSync(`${pathname.join(path, artifact.name)}.zip`, Buffer.from(zip.data), 'binary')
-                continue
-            }
-
-            const tempDir = fs.mkdtempSync(pathname.join(os.tmpdir(), 'tmp-'));
-            const tempFile = pathname.join(tempDir, artifact.name)
-            fs.writeFileSync(tempFile, Buffer.from(zip.data), 'binary')
-
-            const dir = name && !nameIsRegExp ? path : pathname.join(path, artifact.name)
-
-            fs.mkdirSync(dir, { recursive: true })
-
-            const zipfile = new StreamZip.async({ file: tempFile })
-
-            core.startGroup(`==> Extracting: ${artifact.name}.zip`)
-            const entries = await zipfile.entries();
-            for (const entry of Object.values(entries)) {
-                const action = entry.isDirectory ? "creating" : "inflating"
-                const filepath = pathname.join(dir, entry.name)
-                core.info(`  ${action}: ${filepath}`)
-            }
-
-            const count = await zipfile.extract(null, dir);
-            fs.rm(tempDir,{ recursive: true, force: true }, (err) => {
-                if (err) {
-                    core.error(`Error removing tmp directory: ${err}: action may still succeed though`)
-                }
-            })
             core.endGroup()
         }
     } catch (error) {
