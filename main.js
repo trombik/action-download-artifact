@@ -251,6 +251,7 @@ async function main() {
             let {downloadPath} = await client.rest.actions.downloadArtifact(artifact_id, {
                 owner: owner,
                 repo: repo,
+                artifact_id: artifact_id,
                 archive_format: "zip",
                 path: path
             });
