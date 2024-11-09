@@ -244,14 +244,19 @@ async function main() {
             const size = filesize(artifact.size_in_bytes, { base: 10 })
 
             core.info(`==> Downloading: ${artifact.name}.zip (${size})`)
+            core.info(`artifact.id: ${artifact.id}`)
+            core.info(`owner: ${owner}`)
+            core.info(`repo: ${repo}`)
+            core.info(`path: ${path}`)
 
             try {
+                const findBy = {
+                    repositoryOwner: owner,
+                    repositoryName: repo
+                }
                 const {downloadPath} = await client.rest.actions.downloadArtifact(artifact.id, {
-                    owner: owner,
-                    repo: repo,
-                    archive_format: "zip",
-                    artifact_id: artifact.id,
-                    path: path
+                    path: path,
+                    findBy
                 })
                 core.info(`Downloaded artifact ${id} to: ${downloadPath}`);
             } catch (error) {
