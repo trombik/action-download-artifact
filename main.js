@@ -248,10 +248,9 @@ async function main() {
                 fs.mkdirSync(path, { recursive: true })
             }
 
-            let {downloadPath} = await client.rest.actions.downloadArtifact({
+            let {downloadPath} = await client.rest.actions.downloadArtifact(artifact_id, {
                 owner: owner,
                 repo: repo,
-                artifact_id: artifact.id,
                 archive_format: "zip",
                 path: path
             });
