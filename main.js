@@ -246,11 +246,11 @@ async function main() {
             core.info(`==> Downloading: ${artifact.name}.zip (${size})`)
 
             try {
-                const {downloadPath} = await client.rest.actions.downloadArtifact({
+                const {downloadPath} = await client.rest.actions.downloadArtifact(artifact.id, {
                     owner: owner,
                     repo: repo,
-                    artifact_id: artifact.id,
                     archive_format: "zip",
+                    path: path
                 })
                 core.info(`Downloaded artifact ${id} to: ${downloadPath}`);
             } catch (error) {
