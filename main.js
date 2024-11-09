@@ -252,7 +252,8 @@ async function main() {
             try {
                 const findBy = {
                     repositoryOwner: owner,
-                    repositoryName: repo
+                    repositoryName: repo,
+                    workflowRunId: runID
                 }
                 const {downloadPath} = await client.rest.actions.downloadArtifact(artifact.id, {
                     path: path,
